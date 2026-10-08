@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #f4f4f7);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --text: var(--tg-theme-text-color, #1c1c1e);
+      --hint: var(--tg-theme-hint-color, #8e8e93);
+      --btn: var(--tg-theme-button-color, #007aff);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --border: rgba(0, 0, 0, 0.08);
+      --active-pill: rgba(0, 122, 255, 0.12);
+      --active-pill-text: #007aff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--tg-theme-bg-color, #18181a);
+        --card-bg: var(--tg-theme-secondary-bg-color, #242426);
+        --text: var(--tg-theme-text-color, #ffffff);
+        --hint: var(--tg-theme-hint-color, #8e8e93);
+        --border: rgba(255, 255, 255, 0.1);
+        --active-pill: rgba(10, 132, 255, 0.25);
+        --active-pill-text: #0a84ff;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      padding-bottom: 90px;
+      min-height: 100vh;
+    }
+
+    .header {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--hint);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--hint);
+      margin-bottom: 10px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .input-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--hint);
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      height: 44px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .date-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    input[type="date"] {
+      color-scheme: light dark;
+      position: relative;
+      padding-right: 44px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0 !important;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .calendar-icon {
+      position: absolute;
+      right: 14px;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      color: #b0b0b8;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    input:focus {
+      border-color: var(--btn);
+    }
+
+    .swap-container {
+      display: flex;
+      justify-content: flex-end;
+      margin: -6px 8px 6px 0;
+    }
+
+    .swap-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--btn);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+
+    .pill.active {
+      background: var(--active-pill);
+      color: var(--active-pill-text);
+      border-color: var(--active-pill-text);
+      font-weight: 600;
+    }
+
+    /* Autocomplete dropdown */
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      display: none;
+      margin-top: 4px;
+    }
+
+    .dropdown-item {
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:active {
+      background: var(--active-pill);
+    }
+
+    /* Toggle switch */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .switch-text h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .switch-text p {
+      font-size: 12px;
+      color: var(--hint);
+      line-height: 1.3;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border);
+      transition: 0.25s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: #34c759;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Primary submit button */
+    .submit-btn {
+      width: 100%;
+      height: 50px;
+      background: var(--btn);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+    }
+
+    .submit-btn:active {
+      opacity: 0.85;
+    }
+
+    .error-box {
+      background: rgba(255, 59, 48, 0.1);
+      color: #ff3b30;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    /* Trip Cards Styles */
+    #resultsSection {
+      display: none;
+      margin-top: 18px;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .results-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .select-all-btn {
+      background: none;
+      border: 1px solid var(--btn);
+      color: var(--btn);
+      border-radius: 16px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .trip-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .trip-card.selected {
+      border-color: #34c759;
+      background: rgba(52, 199, 89, 0.05);
+      box-shadow: 0 4px 14px rgba(52, 199, 89, 0.15);
+    }
+
+    .trip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .train-badge {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .seats-count-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: rgba(52, 199, 89, 0.15);
+      color: #34c759;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .seats-count-badge.zero {
+      background: rgba(255, 59, 48, 0.12);
+      color: #ff3b30;
+    }
+
+    .checkbox-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--hint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-size: 14px;
+      color: white;
+    }
+
+    .trip-card.selected .checkbox-icon {
+      background: #34c759;
+      border-color: #34c759;
+    }
+
+    .trip-times {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      background: var(--bg);
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .time-block {
+      text-align: left;
+    }
+
+    .time-block.right {
+      text-align: right;
+    }
+
+    .time-val {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .station-val {
+      font-size: 11px;
+      color: var(--hint);
+    }
+
+    .duration-block {
+      text-align: center;
+      font-size: 11px;
+      color: var(--hint);
+      font-weight: 600;
+    }
+
+    .duration-line {
+      height: 2px;
+      background: var(--border);
+      position: relative;
+      margin: 4px 0;
+      width: 50px;
+    }
+
+    .classes-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .class-tag {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .class-tag:active {
+      transform: scale(0.96);
+    }
+
+    .class-tag.selected {
+      background: var(--active-pill);
+      color: var(--active-pill-text);
+      border-color: var(--active-pill-text);
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+    }
+
+    .class-tag.selected strong {
+      color: var(--active-pill-text);
+    }
+
+    .class-tag strong {
+      color: #34c759;
+    }
+
+    .no-seats-tag {
+      font-size: 12px;
+      color: #ff3b30;
+      font-weight: 500;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Profile Card Styles */
+    .profile-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .profile-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .profile-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(0, 122, 255, 0.12);
+      color: var(--btn);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .profile-text {
+      min-width: 0;
+    }
+    .profile-name {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .profile-status {
+      font-size: 12px;
+      color: var(--hint);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .profile-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--btn);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .profile-btn:active {
+      opacity: 0.7;
+    }
+    .token-panel {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+    .token-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .token-input-row input {
+      flex: 1;
+      height: 40px;
+      font-size: 13px;
+    }
+    .save-token-btn {
+      background: var(--btn);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .token-status-msg {
+      font-size: 11px;
+      margin-top: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚆 <span>Пошук & Моніторинг УЗ</span></h1>
+    <p>Картки рейсів, швидкий пошук та автобронь квитків</p>
+  </div>
+
+  <div id="errorBox" class="error-box"></div>
+
+  <!-- UZ Account / Profile Card -->
+  <div class="profile-card" id="profileCard">
+    <div class="profile-header-row">
+      <div class="profile-info">
+        <div class="profile-avatar" id="profileAvatar">👤</div>
+        <div class="profile-text">
+          <div class="profile-name" id="profileName">Завантаження профілю...</div>
+          <div class="profile-status" id="profileStatus">
+            <span class="status-dot">⚪</span> Перевірка з'єднання
+          </div>
+        </div>
+      </div>
+      <button type="button" class="profile-btn" id="toggleTokenPanelBtn">🔑 Токен</button>
+    </div>
+
+    <!-- Hidden Token Input Panel -->
+    <div class="token-panel" id="tokenPanel">
+      <label style="font-size: 11px;">Вставте токен або скопійовану команду (<code>/token eyJ...</code>):</label>
+      <div class="token-input-row">
+        <input type="text" id="customTokenInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off">
+        <button type="button" class="save-token-btn" id="saveTokenBtn">Зберегти</button>
+      </div>
+      <div class="token-status-msg" id="tokenStatusMsg"></div>
+      <div style="margin-top: 8px; display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-size: 11px; color: var(--hint);">Отримати токен у 1 клік:</span>
+        <a href="https://uz-proxy.holan-uz.workers.dev/connect" onclick="openConnectExternal(event)" target="_blank" style="font-size: 11px; color: var(--btn); text-decoration: none; font-weight: 600;">⭐ Розумна закладка</a>
+      </div>
+      <div id="logoutRow" style="display: none; margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+        <button type="button" id="logoutTokenBtn" class="btn" style="background: rgba(255,59,48,0.15); color: #ff3b30; border: 1px solid rgba(255,59,48,0.3); font-size: 12px; padding: 6px 12px; border-radius: 8px; width: 100%;">🚪 Вийти з акаунту</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route Card -->
+  <div class="card">
+    <div class="card-title">📍 Маршрут</div>
+
+    <div class="input-group">
+      <label>Звідки (місто або станція):</label>
+      <input type="text" id="fromInput" placeholder="Почніть вводити (напр. Київ)" autocomplete="off">
+      <div id="fromDropdown" class="dropdown"></div>
+      <div class="pills" id="fromPills">
+        <span class="pill" data-city="Київ">Київ</span>
+        <span class="pill" data-city="Львів">Львів</span>
+        <span class="pill" data-city="Одеса-Головна">Одеса</span>
+        <span class="pill" data-city="Харків-Пас">Харків</span>
+        <span class="pill" data-city="Дніпро-Головний">Дніпро</span>
+      </div>
+    </div>
+
+    <div class="swap-container">
+      <button type="button" class="swap-btn" id="swapBtn">
+        🔄 Поміняти місцями
+      </button>
+    </div>
+
+    <div class="input-group">
+      <label>Куди (місто або станція):</label>
+      <input type="text" id="toInput" placeholder="Почніть вводити (напр. Львів)" autocomplete="off">
+      <div id="toDropdown" class="dropdown"></div>
+      <div class="pills" id="toPills">
+        <span class="pill" data-city="Львів">Львів</span>
+        <span class="pill" data-city="Київ">Київ</span>
+        <span class="pill" data-city="Івано-Франківськ">Івано-Франківськ</span>
+        <span class="pill" data-city="Ужгород">Ужгород</span>
+        <span class="pill" data-city="Чернівці">Чернівці</span>
+        <span class="pill" data-city="Перемишль">Перемишль 🇵🇱</span>
+        <span class="pill" data-city="Холм (пересадка на Варшаву)">Холм 🇵🇱</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date Card -->
+  <div class="card">
+    <div class="card-title">📅 Дата відправлення</div>
+    <div class="input-group">
+      <div class="date-input-wrap">
+        <input type="date" id="dateInput">
+        <svg class="calendar-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <div class="pills" id="datePills">
+        <span class="pill" id="pillToday">Сьогодні</span>
+        <span class="pill active" id="pillTomorrow">Завтра</span>
+        <span class="pill" id="pillAfterTomorrow">Післязавтра</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action: Search Trips Button -->
+  <button type="button" class="submit-btn" id="searchBtn" style="background: #2aabee; margin-bottom: 14px;">
+    <span id="searchBtnText">🔍 Знайти рейси</span>
+  </button>
+
+  <!-- Interactive Search Results Section (Shown directly inside WebApp!) -->
+  <div id="resultsSection">
+    <div class="results-header">
+      <h2 id="resultsTitle">🚆 Доступні рейси</h2>
+      <button type="button" class="select-all-btn" id="selectAllBtn">Обрати всі</button>
+    </div>
+    <div id="tripsList"></div>
+  </div>
+
+  <!-- Threshold & Train Card -->
+  <div class="card" id="settingsCard">
+    <div class="card-title">🎯 Умова сповіщення</div>
+    <div class="input-group">
+      <label>Режим моніторингу:</label>
+      <div class="pills" id="thresholdPills">
+        <span class="pill" data-val="auto">⚡ Розумний (сплеск/аномалія)</span>
+        <span class="pill" data-val="1">≤ 1 місце</span>
+        <span class="pill" data-val="3">≤ 3 місця</span>
+        <span class="pill active" data-val="5">≤ 5 місць ⭐</span>
+        <span class="pill" data-val="10">≤ 10 місць</span>
+      </div>
+      <div style="font-size: 11px; color: var(--hint); margin-top: 5px;" id="thresholdHint">
+        Сповістить, коли кількість квитків стане меншою або рівною 5.
+      </div>
+    </div>
+
+    <div class="input-group" style="margin-top: 14px;">
+      <label>Номер поїзда (або оберіть у картках вгорі):</label>
+      <input type="text" id="trainInput" placeholder="Всі поїзди на день (або напр. 705)">
+      <div style="font-size: 11px; color: var(--hint); margin-top: 4px;">
+        Якщо обрано картки вище, моніторинг буде активовано саме для них. Класи вагонів обираються безпосередньо на картках.
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-booking Toggle -->
+  <div class="card">
+    <div class="switch-row">
+      <div class="switch-text">
+        <h3>🎟️ Автобронь-страховка у кошик УЗ</h3>
+        <p><b>Без списання коштів!</b> Бот безкоштовно резервує квитки у ваш кошик УЗ на 15 хв, щойно місця почнуть закінчуватися або з'являться з нуля. Оплачуєте ви самі у застосунку УЗ.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="bookToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Explainer comparing with UZ auto-buy -->
+    <div id="autoBookExplainer" style="display: none; margin-top: 12px; padding: 10px 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; font-size: 11px; line-height: 1.5; color: var(--text);">
+      💡 <b>Чим це відрізняється від автовикупу УЗ?</b><br>
+      • <b>Без прив'язки картки та списання грошей:</b> автовикуп УЗ миттєво знімає повну вартість з банківської карти. Наш бот <i>НЕ потребує картки і НЕ знімає кошти</i> — квиток безкоштовно кладеться у ваш кошик УЗ на 15 хвилин.<br>
+      • <b>Страховка на випередження:</b> бот ловить місця завчасно (наприклад, коли лишилось ≤ 10 місць чи при аномальному попиті), щоб їх не розібрали інші, поки ви думаєте.<br>
+      • <b>Повна безпека:</b> ви отримуєте посилання, переглядаєте вагони/місця і самі вирішуєте — сплатити в УЗ чи відпустити. Якщо не оплатите, бронь згорить без штрафів і комісій за повернення.
+    </div>
+
+    <!-- Connect Account Banner when not logged in -->
+    <div id="connectAccountBanner" style="margin-top: 10px; padding: 10px 12px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; display: none; align-items: center; justify-content: space-between; gap: 8px;">
+      <div style="font-size: 11px; color: var(--text);">
+        🔑 <b>Свій акаунт УЗ:</b> підключіть для автоброні в 1 клік
+      </div>
+      <a href="https://uz-proxy.holan-uz.workers.dev/connect" onclick="openConnectExternal(event)" target="_blank" style="text-decoration: none; font-size: 11px; font-weight: 600; background: #0284c7; color: white; padding: 5px 10px; border-radius: 8px; white-space: nowrap;">
+        ⭐ Закладка
+      </a>
+    </div>
+
+    <!-- Multi-passenger configuration section (Only shown if user has activeToken) -->
+    <div id="passengerSection" style="display: none; margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <label style="margin: 0; font-weight: 600; font-size: 13px;">👥 Пасажири для бронювання:</label>
+        <span id="passengerCountBadge" style="font-size: 11px; background: var(--bg); padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); color: var(--btn); font-weight: 600;">1 квиток</span>
+      </div>
+      <div style="font-size: 11px; color: var(--hint); margin-bottom: 8px;">
+        Оберіть одного або кількох пасажирів із вашого акаунта УЗ. Бот забронює місця разом в одному замовленні.
+      </div>
+      <div id="passengerList" class="pills" style="margin-top: 4px;">
+        <div style="font-size: 12px; color: var(--hint); padding: 4px 0;">Завантаження списку пасажирів...</div>
+      </div>
+      <div id="seatingPreferenceGroup" style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border);">
+        <label style="margin: 0 0 6px 0; font-weight: 600; font-size: 13px; display: block;">💺 Розміщення місць у поїзді:</label>
+        <div class="pills" id="seatingPills">
+          <span class="pill active" data-pref="nearby">🛋️ Тільки поруч (одне купе/кабінка)</span>
+          <span class="pill" data-pref="same_wagon">🚃 В одному вагоні</span>
+          <span class="pill" data-pref="any">🌐 Будь-які вільні</span>
+        </div>
+        <div id="seatingPreferenceHint" style="font-size: 11px; color: var(--hint); margin-top: 5px;">
+          Бот шукатиме вільні місця виключно поруч в одній кабінці або купе (до 4-6 місць).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="submit-btn" id="submitBtn">
+    <span id="submitBtnText">Запустити моніторинг 🚀</span>
+  </button>
+
+  <script>
+window.UZ_STATIONS = [{"id": 2210770, "name": "Євпаторія-Курорт"}, {"id": 2218207, "name": "Єзупіль"}, {"id": 2210875, "name": "Єлизаветівка"}, {"id": 2214170, "name": "Єнакієве"}, {"id": 2210722, "name": "Єфремівська"}, {"id": 2218393, "name": "Іване-Пусте"}, {"id": 2218044, "name": "Іваничі"}, {"id": 2200172, "name": "Іванківці"}, {"id": 2218200, "name": "Івано-Франківськ"}, {"id": 2200187, "name": "Івачкове"}, {"id": 2210679, "name": "Івківка"}, {"id": 2210676, "name": "Ігрень"}, {"id": 2214235, "name": "Ізварине"}, {"id": 2208580, "name": "Ізмаїл"}, {"id": 2204420, "name": "Ізюм"}, {"id": 2200188, "name": "Ізяслав"}, {"id": 2210677, "name": "Іларіонове"}, {"id": 2214250, "name": "Іловайськ"}, {"id": 2200044, "name": "Ім. Бориса Олійника"}, {"id": 2204506, "name": "Ім. Василя Несвіта"}, {"id": 2200065, "name": "Ім. Георгія Кірпи"}, {"id": 2214053, "name": "Ім. Кожушко О.М."}, {"id": 2204416, "name": "Ім. Олега Крючкова"}, {"id": 2208350, "name": "Ім. Тараса Шевченка, м. Сміла"}, {"id": 2210897, "name": "Інгулець"}, {"id": 2210733, "name": "Інкерман 1"}, {"id": 2200083, "name": "Ірпінь"}, {"id": 2200091, "name": "Ірша"}, {"id": 2204549, "name": "Ічня"}, {"id": 2204575, "name": "Абазівка"}, {"id": 2214039, "name": "Авдіївка"}, {"id": 2208349, "name": "Адабаш"}, {"id": 2200221, "name": "Адампіль"}, {"id": 5350811, "name": "Аджуд"}, {"id": 2210805, "name": "Азовська"}, {"id": 2210766, "name": "Айвазовська"}, {"id": 2208483, "name": "Аккаржа"}, {"id": 2200286, "name": "Алтинівка"}, {"id": 2204495, "name": "Амбари"}, {"id": 2214247, "name": "Амвросіївка"}, {"id": 2204539, "name": "Андріяшівка"}, {"id": 2218120, "name": "Антонівка, Рівненська обл."}, {"id": 2200217, "name": "Антоніни"}, {"id": 2214430, "name": "Антрацит"}, {"id": 2210830, "name": "Апостолове"}, {"id": 2210685, "name": "Армянськ"}, {"id": 2210767, "name": "Ароматна"}, {"id": 2208490, "name": "Арциз"}, {"id": 2214274, "name": "Асланове"}, {"id": 2201238, "name": "Бадівка"}, {"id": 2200233, "name": "Балин"}, {"id": 2200247, "name": "Бар"}, {"id": 2200292, "name": "Баранне"}, {"id": 2200062, "name": "Баришівка"}, {"id": 2200032, "name": "Бахмач-Київський"}, {"id": 2200030, "name": "Бахмач-Пасажирський"}, {"id": 2300585, "name": "Бахмут, Молдова"}, {"id": 2200120, "name": "Бердичів"}, {"id": 2200117, "name": "Бердичів Житомирський"}, {"id": 2200061, "name": "Березань"}, {"id": 2204482, "name": "Берестин"}, {"id": 2201235, "name": "Бобрик"}, {"id": 2200051, "name": "Бобровиця"}, {"id": 2200265, "name": "Богданівці"}, {"id": 2200255, "name": "Бондарівка"}, {"id": 2200064, "name": "Бориспіль"}, {"id": 2200088, "name": "Бородянка"}, {"id": 2200140, "name": "Боярка"}, {"id": 2200243, "name": "Браїлів"}, {"id": 2200053, "name": "Бровари"}, {"id": 2200152, "name": "Брівки"}, {"id": 5510017, "name": "Будапешт-Келеті (Центральний вокзал)"}, {"id": 2200084, "name": "Буча"}, {"id": 2200180, "name": "Біла Церква"}, {"id": 2218156, "name": "Біла-Чортківська"}, {"id": 2208560, "name": "Білгород-Дністровський"}, {"id": 2200082, "name": "Біличі"}, {"id": 2200101, "name": "Білокоровичі"}, {"id": 2200695, "name": "Білосілля"}, {"id": 5100136, "name": "Варшава Центральна"}, {"id": 2200139, "name": "Васильків 1"}, {"id": 2201244, "name": "Велика Загорівка"}, {"id": 2214267, "name": "Велико-Анадоль"}, {"id": 2200252, "name": "Вендичани"}, {"id": 2204543, "name": "Венеславівка"}, {"id": 2200045, "name": "Вересоч"}, {"id": 2200046, "name": "Вертіївка"}, {"id": 2210698, "name": "Верхній Токмак 2"}, {"id": 2200009, "name": "Видубичі"}, {"id": 2200360, "name": "Видубичі-Трипільські"}, {"id": 2204564, "name": "Вили"}, {"id": 2204494, "name": "Вири"}, {"id": 2200261, "name": "Виступовичі"}, {"id": 2200006, "name": "Вишневе"}, {"id": 2204478, "name": "Власівка"}, {"id": 2204392, "name": "Вовчанськ"}, {"id": 2204475, "name": "Водолага"}, {"id": 2204525, "name": "Водяна"}, {"id": 2200268, "name": "Волочиськ"}, {"id": 2200315, "name": "Волфине"}, {"id": 2200085, "name": "Ворзель"}, {"id": 2200050, "name": "Ворожба"}, {"id": 2200206, "name": "Вороновиця"}, {"id": 2214190, "name": "Вуглегірськ"}, {"id": 2201231, "name": "Вчорайше"}, {"id": 2200294, "name": "Війтівці"}, {"id": 2200238, "name": "Вікторія"}, {"id": 2200200, "name": "Вінниця"}, {"id": 2200122, "name": "Вірівка"}, {"id": 2204176, "name": "Гавриші"}, {"id": 2204544, "name": "Гадяч Ім. Сергієнка Миколи Івановича"}, {"id": 2200213, "name": "Гайсин"}, {"id": 2204556, "name": "Галка"}, {"id": 2204183, "name": "Герсеванівський"}, {"id": 2200021, "name": "Глухів"}, {"id": 2200242, "name": "Гнівань"}, {"id": 2200194, "name": "Голендри"}, {"id": 2204496, "name": "Головашівка"}, {"id": 2200094, "name": "Головки"}, {"id": 2208119, "name": "Голта (Первомайськ-На-Бузі)"}, {"id": 2200033, "name": "Голубичі"}, {"id": 2200112, "name": "Горбаші"}, {"id": 2200038, "name": "Горностаївка"}, {"id": 2200272, "name": "Городня, Чернігівська обл."}, {"id": 2204558, "name": "Грабарівка"}, {"id": 2204424, "name": "Гракове"}, {"id": 2204550, "name": "Гребінка"}, {"id": 2200229, "name": "Гречани"}, {"id": 2200039, "name": "Грибова Рудня"}, {"id": 2204534, "name": "Григорівка"}, {"id": 2204422, "name": "Гроза"}, {"id": 2200028, "name": "Грузьке"}, {"id": 2204515, "name": "Губарівка"}, {"id": 2200195, "name": "Гулівці"}, {"id": 2200707, "name": "Гуменці"}, {"id": 2204399, "name": "Гусинка"}, {"id": 2200007, "name": "Дарниця"}, {"id": 2204413, "name": "Дворічна"}, {"id": 2214210, "name": "Дебальцеве"}, {"id": 2210773, "name": "Девладове"}, {"id": 2214237, "name": "Деконська"}, {"id": 2200168, "name": "Денгофівка"}, {"id": 2201263, "name": "Деражня"}, {"id": 2204441, "name": "Дергачі"}, {"id": 2200269, "name": "Деревини"}, {"id": 2210710, "name": "Джанкой"}, {"id": 2208134, "name": "Джулинка"}, {"id": 2210700, "name": "Дніпро-Головний"}, {"id": 2210701, "name": "Дніпро-Лоцманська"}, {"id": 2210200, "name": "Дніпрорудне"}, {"id": 2214268, "name": "Довжанська"}, {"id": 2208440, "name": "Долинська"}, {"id": 2214000, "name": "Донецьк"}, {"id": 2200282, "name": "Доч"}, {"id": 2208336, "name": "Драбове-Барятинське"}, {"id": 2214089, "name": "Дружківка"}, {"id": 2214044, "name": "Дубове"}, {"id": 2200232, "name": "Дунаївці"}, {"id": 2204547, "name": "Дібровський Кінний Завод"}, {"id": 2210253, "name": "Діївка"}, {"id": 2210890, "name": "Елеваторна"}, {"id": 2210632, "name": "Енергодар"}, {"id": 2210787, "name": "Ерастівка"}, {"id": 2200298, "name": "Есмань"}, {"id": 2204958, "name": "Естакадний"}, {"id": 2204427, "name": "Есхар"}, {"id": 2200169, "name": "Жашків"}, {"id": 2214006, "name": "Желанна"}, {"id": 2208447, "name": "Жеребкове"}, {"id": 2218099, "name": "Жидачів"}, {"id": 2200191, "name": "Жижниківці"}, {"id": 5617915, "name": "Жиліна"}, {"id": 2200711, "name": "Житні Гори"}, {"id": 2200400, "name": "Житомир"}, {"id": 2200270, "name": "Жмеринка"}, {"id": 2218648, "name": "Жовква"}, {"id": 2210786, "name": "Жовтокам'янка"}, {"id": 2210751, "name": "Жовті Води 1"}, {"id": 2210271, "name": "Жовті Води 2"}, {"id": 2200066, "name": "Жукотки"}, {"id": 2200256, "name": "Журавлівка"}, {"id": 2200052, "name": "Заворичі"}, {"id": 2210791, "name": "Зайцеве"}, {"id": 2204469, "name": "Закомельська"}, {"id": 2200222, "name": "Закупне"}, {"id": 2204445, "name": "Залютине"}, {"id": 2204165, "name": "Занки"}, {"id": 2204414, "name": "Заоскілля"}, {"id": 2210800, "name": "Запоріжжя 1"}, {"id": 2210730, "name": "Запоріжжя 2"}, {"id": 2210768, "name": "Запоріжжя-Кам'янське"}, {"id": 2210728, "name": "Запорізька Січ"}, {"id": 2200158, "name": "Зарудинці"}, {"id": 2208520, "name": "Затишшя"}, {"id": 2210671, "name": "Зачепилівка"}, {"id": 2208379, "name": "Звенигородка"}, {"id": 2200810, "name": "Зернове"}, {"id": 2208107, "name": "Зименове"}, {"id": 2214125, "name": "Зимогір'я"}, {"id": 2204465, "name": "Зміїв"}, {"id": 2208400, "name": "Знам'янка"}, {"id": 2208390, "name": "Знам'янка-Пасажирська"}, {"id": 2204501, "name": "Золотницький"}, {"id": 2208338, "name": "Золотоноша 1"}, {"id": 2204461, "name": "Золочів"}, {"id": 2208425, "name": "Зятківці"}, {"id": 2200069, "name": "Йолча"}, {"id": 2200716, "name": "Йосипівка (Житомирська обл.)"}, {"id": 2200198, "name": "Калинівка 1"}, {"id": 2200260, "name": "Кам'янець-Подільський"}, {"id": 2210720, "name": "Кам'янське-Пасажирське"}, {"id": 2200311, "name": "Караваєві Дачі"}, {"id": 2200209, "name": "Кароліна"}, {"id": 2300000, "name": "Кишинів"}, {"id": 2200003, "name": "Київ-Волинський"}, {"id": 2200004, "name": "Київ-Деміївський"}, {"id": 2200001, "name": "Київ-Пасажирський"}, {"id": 2200087, "name": "Клавдієво"}, {"id": 2200023, "name": "Кобижча"}, {"id": 2218020, "name": "Ковель"}, {"id": 2200142, "name": "Кожанка"}, {"id": 2204438, "name": "Козача Лопань"}, {"id": 2200171, "name": "Козятин 2"}, {"id": 2210777, "name": "Комиш-Зоря"}, {"id": 2200057, "name": "Кононівка"}, {"id": 2200040, "name": "Конотоп"}, {"id": 2200249, "name": "Копай"}, {"id": 2200110, "name": "Коростень"}, {"id": 2200024, "name": "Кошари"}, {"id": 2200225, "name": "Красилів"}, {"id": 2204610, "name": "Кременчук"}, {"id": 2210900, "name": "Кривий Ріг-Гол"}, {"id": 2210834, "name": "Кривий Ріг-Західний"}, {"id": 2200184, "name": "Кривин"}, {"id": 2200212, "name": "Криштопівка, Вінницька обл."}, {"id": 2200020, "name": "Кролевець"}, {"id": 2208410, "name": "Кропивницький"}, {"id": 2200036, "name": "Крути"}, {"id": 2204597, "name": "Крюків-На-Дніпрі"}, {"id": 2204380, "name": "Куп'янськ-Вузловий"}, {"id": 2204403, "name": "Куп'янськ-Південний"}, {"id": 2204404, "name": "Курилівка, Харківська обл."}, {"id": 2200063, "name": "Кучакове"}, {"id": 2214158, "name": "Кіндрашівська-Нова"}, {"id": 2208427, "name": "Ладижин"}, {"id": 2204563, "name": "Лазірки"}, {"id": 2204586, "name": "Ланна"}, {"id": 2204950, "name": "Лебединська"}, {"id": 2210684, "name": "Лежине"}, {"id": 2200237, "name": "Ленківці"}, {"id": 2214020, "name": "Лиман"}, {"id": 2204557, "name": "Линовиця"}, {"id": 2204430, "name": "Лозова  (Харківська обл.)"}, {"id": 2204554, "name": "Лосинівка"}, {"id": 2204390, "name": "Лосєве"}, {"id": 2204015, "name": "Лосєве 2"}, {"id": 2204542, "name": "Лохвиця"}, {"id": 2210771, "name": "Лошкарівка"}, {"id": 2204560, "name": "Лубни"}, {"id": 2200730, "name": "Лугини"}, {"id": 2214359, "name": "Лутовинівське Селище"}, {"id": 2218060, "name": "Луцьк"}, {"id": 2218000, "name": "Львів"}, {"id": 2208444, "name": "Любашівка"}, {"id": 2204519, "name": "Люботин"}, {"id": 2204521, "name": "Люботин-Західний"}, {"id": 2208405, "name": "Людмилівка"}, {"id": 2208386, "name": "Лікарівка"}, {"id": 2200326, "name": "Лісова Буча"}, {"id": 2200239, "name": "Лісоводи"}, {"id": 2204611, "name": "Ліщинівка"}, {"id": 2200279, "name": "Макошине"}, {"id": 2204517, "name": "Максимівка"}, {"id": 2204615, "name": "Мала Перещепинська"}, {"id": 2210692, "name": "Мала Токмачка"}, {"id": 2200093, "name": "Малин"}, {"id": 2200056, "name": "Мар'янівка, Полтавська обл."}, {"id": 2218198, "name": "Марківці, Івано-Франківська обл."}, {"id": 2208409, "name": "Мартинівська"}, {"id": 2200246, "name": "Матейкове"}, {"id": 2204856, "name": "Матяшівка"}, {"id": 2208412, "name": "Медерове"}, {"id": 2200290, "name": "Мена"}, {"id": 2204447, "name": "Мерефа"}, {"id": 2204518, "name": "Мерчик"}, {"id": 2210799, "name": "Миколаївка-Донецька"}, {"id": 2204197, "name": "Милашенкове"}, {"id": 2204570, "name": "Миргород"}, {"id": 2200190, "name": "Миронівка"}, {"id": 2200177, "name": "Миропіль"}, {"id": 2201157, "name": "Мирославка"}, {"id": 2200739, "name": "Михайленки"}, {"id": 2204939, "name": "Мовчанове"}, {"id": 2200185, "name": "Могиляни"}, {"id": 2200280, "name": "Могилів-Подільський"}, {"id": 2208381, "name": "Монастирище"}, {"id": 2204401, "name": "Моначинівка"}, {"id": 2200141, "name": "Мотовилівка"}, {"id": 2204428, "name": "Мохнач"}, {"id": 2218070, "name": "Мукачево"}, {"id": 2200235, "name": "Мукша"}, {"id": 2208511, "name": "Мішкове"}, {"id": 2200267, "name": "Наркевичі"}, {"id": 2200068, "name": "Неданчичі"}, {"id": 2200208, "name": "Немирів"}, {"id": 2200086, "name": "Немішаєве"}, {"id": 2210673, "name": "Нижньодніпровськ"}, {"id": 2200275, "name": "Низківка"}, {"id": 2210282, "name": "Низяни"}, {"id": 2204446, "name": "Нова Баварія"}, {"id": 2200743, "name": "Нова Борова"}, {"id": 2200792, "name": "Новгород-Сіверський"}, {"id": 2214148, "name": "Новий Айдар"}, {"id": 2208504, "name": "Новий Буг"}, {"id": 2201211, "name": "Новичі"}, {"id": 2201160, "name": "Новобіличі"}, {"id": 2210682, "name": "Новогупалівка"}, {"id": 2208501, "name": "Новоданилівка"}, {"id": 2208116, "name": "Новокиївка"}, {"id": 2208346, "name": "Новомиргород"}, {"id": 2208505, "name": "Новополтавка"}, {"id": 2201121, "name": "Новотроянда"}, {"id": 2208403, "name": "Новоукраїнка"}, {"id": 2204613, "name": "Нові Санжари"}, {"id": 2200049, "name": "Носівка"}, {"id": 2201216, "name": "Нігин"}, {"id": 2200070, "name": "Ніжин"}, {"id": 2210780, "name": "Нікополь"}, {"id": 2210691, "name": "Обща"}, {"id": 2210802, "name": "Обільна"}, {"id": 2200090, "name": "Овруч"}, {"id": 2204522, "name": "Огульці"}, {"id": 2208001, "name": "Одеса-Головна"}, {"id": 2208002, "name": "Одеса-Східна"}, {"id": 2204456, "name": "Одноробівка"}, {"id": 2218023, "name": "Ожидів-Олесько"}, {"id": 2218012, "name": "Озеряни"}, {"id": 2200103, "name": "Олевськ"}, {"id": 2208380, "name": "Олександрія"}, {"id": 2214264, "name": "Оленівка"}, {"id": 2200750, "name": "Ольшаниця"}, {"id": 2208331, "name": "Олійникове"}, {"id": 2204474, "name": "Ордівка"}, {"id": 2214242, "name": "Орлова Слобода"}, {"id": 2210307, "name": "Орлівщина"}, {"id": 2204489, "name": "Орілька"}, {"id": 2210832, "name": "Оріхівська"}, {"id": 2208137, "name": "Осикувата"}, {"id": 2204410, "name": "Основа"}, {"id": 2210732, "name": "Останіне"}, {"id": 2218037, "name": "Остки"}, {"id": 2200186, "name": "Острог"}, {"id": 2210745, "name": "Острякове"}, {"id": 2204890, "name": "Охтирка"}, {"id": 2214041, "name": "Очеретине"}, {"id": 2200181, "name": "Пасічний"}, {"id": 2204911, "name": "Первомайське-Південе"}, {"id": 2204417, "name": "Переддонбасівська"}, {"id": 5100096, "name": "Перемишль"}, {"id": 2204463, "name": "Пересічна"}, {"id": 2200025, "name": "Переяславська"}, {"id": 2200176, "name": "Печанівка"}, {"id": 2200014, "name": "Пиротчине"}, {"id": 2208401, "name": "Плетений Ташлик"}, {"id": 2200035, "name": "Плиски"}, {"id": 2200161, "name": "Погребище 1"}, {"id": 2200210, "name": "Полонне"}, {"id": 2204580, "name": "Полтава-Київська"}, {"id": 2204590, "name": "Полтава-Південна"}, {"id": 2201194, "name": "Поляни"}, {"id": 2201143, "name": "Понінка"}, {"id": 2200151, "name": "Попільня"}, {"id": 2210723, "name": "Поштова, АРК"}, {"id": 2204395, "name": "Приколотне"}, {"id": 2204540, "name": "Прилуки"}, {"id": 2204421, "name": "Прокопівка"}, {"id": 2201155, "name": "Протасів Яр"}, {"id": 2200060, "name": "Путивль"}, {"id": 2214266, "name": "Південнодонбаська"}, {"id": 2208092, "name": "Південноукраїнська"}, {"id": 2208542, "name": "Раденське"}, {"id": 2200137, "name": "Радулин"}, {"id": 2204418, "name": "Радьківські Піски"}, {"id": 2200175, "name": "Разіне"}, {"id": 2201232, "name": "Райки"}, {"id": 2208461, "name": "Раухівка"}, {"id": 2200258, "name": "Рахни"}, {"id": 2204051, "name": "Редути"}, {"id": 2208303, "name": "Рені"}, {"id": 2200490, "name": "Речовий Ринок"}, {"id": 2204573, "name": "Решетилівка"}, {"id": 2200160, "name": "Ржевуська"}, {"id": 2200123, "name": "Рихальська"}, {"id": 2204156, "name": "Рогань"}, {"id": 2204462, "name": "Рогозянка"}, {"id": 2208460, "name": "Роздільна 1"}, {"id": 2208423, "name": "Розкошівка"}, {"id": 2200146, "name": "Рокитне"}, {"id": 2204510, "name": "Ромни"}, {"id": 2204530, "name": "Ромодан"}, {"id": 2200157, "name": "Роставиця"}, {"id": 2200758, "name": "Роток"}, {"id": 2204470, "name": "Рубанка"}, {"id": 2204594, "name": "Рублівка"}, {"id": 2204807, "name": "Рубці"}, {"id": 2208434, "name": "Рудниця"}, {"id": 2204844, "name": "Рябушки"}, {"id": 2218400, "name": "Рівне"}, {"id": 2204468, "name": "Савинці, Харківська обл."}, {"id": 2200178, "name": "Самчинці"}, {"id": 2204488, "name": "Сахновщина"}, {"id": 2201002, "name": "Свеса"}, {"id": 2200008, "name": "Святошин"}, {"id": 2200936, "name": "Семенівка, Чернігівська обл."}, {"id": 2200761, "name": "Семилітка"}, {"id": 2200234, "name": "Сербинівці"}, {"id": 2200155, "name": "Сестринівка"}, {"id": 2204505, "name": "Сироватка"}, {"id": 2200211, "name": "Ситківці"}, {"id": 2201210, "name": "Склозаводська"}, {"id": 2204152, "name": "Скоросний"}, {"id": 2204508, "name": "Скрягівка"}, {"id": 2200219, "name": "Скібнево"}, {"id": 2210681, "name": "Славгород-Південний"}, {"id": 2200763, "name": "Славута 1"}, {"id": 2201242, "name": "Славутич, Київська обл."}, {"id": 2200274, "name": "Сновськ"}, {"id": 2210824, "name": "Солоне Озеро"}, {"id": 2200089, "name": "Спартак"}, {"id": 2200307, "name": "Старий Луг"}, {"id": 2204153, "name": "Старовірівка"}, {"id": 2200218, "name": "Старокостянтинів 1"}, {"id": 2200230, "name": "Старокостянтинів 2"}, {"id": 2200767, "name": "Староустенці"}, {"id": 2204491, "name": "Страсний"}, {"id": 2200145, "name": "Судилків"}, {"id": 2204450, "name": "Суми"}, {"id": 2200192, "name": "Суховоля, Житомирська обл."}, {"id": 2200278, "name": "Сухоліси"}, {"id": 2210785, "name": "Таврійськ"}, {"id": 2204582, "name": "Тагамлик"}, {"id": 2204480, "name": "Талалаївка"}, {"id": 2208373, "name": "Тальне"}, {"id": 2204194, "name": "Тарнавщина"}, {"id": 2218218, "name": "Татарів-Буковель ⛷️"}, {"id": 2200013, "name": "Терещенська"}, {"id": 2204429, "name": "Тернове"}, {"id": 2218300, "name": "Тернопіль"}, {"id": 2208123, "name": "Тернівка-Миколаївська"}, {"id": 2200075, "name": "Тетерів"}, {"id": 2200167, "name": "Тетіїв"}, {"id": 2208744, "name": "Тимкове"}, {"id": 5300207, "name": "Тиргу-Фрумос"}, {"id": 2204412, "name": "Тополі"}, {"id": 2204497, "name": "Торопилівка"}, {"id": 2209491, "name": "Торосове"}, {"id": 2204493, "name": "Торохтяний"}, {"id": 2208395, "name": "Трепівка"}, {"id": 2201181, "name": "Триліси"}, {"id": 2200149, "name": "Трипілля-Дніпровське"}, {"id": 2204419, "name": "Тропа"}, {"id": 2204460, "name": "Тростянець-Смородине"}, {"id": 2204171, "name": "Трійчате"}, {"id": 2200241, "name": "Тюшки"}, {"id": 2210742, "name": "Тік"}, {"id": 2218003, "name": "Удрицьк"}, {"id": 2218095, "name": "Ужгород"}, {"id": 2201204, "name": "Українка"}, {"id": 2210712, "name": "Українська"}, {"id": 2200223, "name": "Уладівка"}, {"id": 2210758, "name": "Улянівка, Дніпропетровська обл."}, {"id": 2204574, "name": "Уманцівка"}, {"id": 2208640, "name": "Умань"}, {"id": 2300145, "name": "Унгєнь-Ясси"}, {"id": 2301564, "name": "Унцешть"}, {"id": 2210820, "name": "Урожайна"}, {"id": 2200144, "name": "Устинівка"}, {"id": 2209492, "name": "Устя"}, {"id": 2300578, "name": "Фалешти"}, {"id": 2201132, "name": "Фармацевтична"}, {"id": 2200150, "name": "Фастів 1"}, {"id": 2214194, "name": "Фащівка"}, {"id": 2210960, "name": "Федорівка, Запорізька обл."}, {"id": 2214095, "name": "Фенольна"}, {"id": 2210880, "name": "Феодосія"}, {"id": 5513615, "name": "Феріхедь"}, {"id": 5350603, "name": "Фокшань"}, {"id": 2214058, "name": "Форпостна"}, {"id": 2208353, "name": "Фундукліївка"}, {"id": 2210689, "name": "Фісаки"}, {"id": 2200029, "name": "Халимонове"}, {"id": 2214260, "name": "Ханженкове"}, {"id": 2204003, "name": "Харків-Балашовський"}, {"id": 2204002, "name": "Харків-Левада"}, {"id": 2204001, "name": "Харків-Пасажирський"}, {"id": 2214270, "name": "Харцизьк"}, {"id": 5501362, "name": "Хедьешхалом"}, {"id": 2208530, "name": "Херсон"}, {"id": 2218536, "name": "Хирів"}, {"id": 2208343, "name": "Хлистунівка"}, {"id": 2214278, "name": "Хлібодарівка"}, {"id": 2200300, "name": "Хмельницький"}, {"id": 2200240, "name": "Хмільник"}, {"id": 2218102, "name": "Ходовичі"}, {"id": 2218098, "name": "Ходорів"}, {"id": 5100013, "name": "Холм (пересадка на Варшаву)"}, {"id": 2200224, "name": "Холонівська"}, {"id": 2200244, "name": "Хоробичі"}, {"id": 2204589, "name": "Хорол"}, {"id": 2218151, "name": "Хоростків"}, {"id": 2201239, "name": "Хороше Озеро"}, {"id": 2218197, "name": "Хриплин"}, {"id": 2208370, "name": "Христинівка"}, {"id": 2219115, "name": "Хуст"}, {"id": 2201178, "name": "Хутір Халимонове"}, {"id": 2200010, "name": "Хутір-Михайлівський"}, {"id": 2300576, "name": "Хіліуць"}, {"id": 2208359, "name": "Цвіткове"}, {"id": 2218630, "name": "Цебрів"}, {"id": 2209370, "name": "Центральна (м.Сміла)"}, {"id": 2208352, "name": "Цибулеве"}, {"id": 2204166, "name": "Циганська"}, {"id": 2218052, "name": "Цумань"}, {"id": 2210930, "name": "Чаплине"}, {"id": 2200283, "name": "Часниківка"}, {"id": 2210694, "name": "Челюскін"}, {"id": 2200034, "name": "Черемушки"}, {"id": 2208340, "name": "Черкаси"}, {"id": 2201203, "name": "Чернявка"}, {"id": 2200058, "name": "Черняхівський"}, {"id": 2218500, "name": "Чернівці"}, {"id": 2218289, "name": "Чернівці-Південна"}, {"id": 2218229, "name": "Чернівці-Північна"}, {"id": 2200600, "name": "Чернігів"}, {"id": 2210736, "name": "Чистопілля"}, {"id": 2218115, "name": "Чоп"}, {"id": 2200776, "name": "Чоповичі"}, {"id": 2200266, "name": "Чорний Острів, Хмельницька обл."}, {"id": 2208351, "name": "Чорноліська"}, {"id": 2208091, "name": "Чорноморськ-Порт"}, {"id": 2200154, "name": "Чорнорудка"}, {"id": 2218626, "name": "Чорнотисів"}, {"id": 2214193, "name": "Чорнухине"}, {"id": 2218135, "name": "Чортків"}, {"id": 2210870, "name": "Чортомлик"}, {"id": 2218032, "name": "Чорторийськ"}, {"id": 2200214, "name": "Чотирбоки"}, {"id": 2200781, "name": "Чубинський"}, {"id": 2204426, "name": "Чугуїв"}, {"id": 2200174, "name": "Чуднів-Волинський"}, {"id": 5613860, "name": "Чієрна над Тісоу"}, {"id": 2208487, "name": "Шабо"}, {"id": 2200806, "name": "Шалимівка"}, {"id": 2208413, "name": "Шарівка"}, {"id": 2204466, "name": "Шебелинка"}, {"id": 2204423, "name": "Шевченкове-Південне"}, {"id": 2200220, "name": "Шепетівка"}, {"id": 2200182, "name": "Шепетівка-Подільська"}, {"id": 2218245, "name": "Шептицький"}, {"id": 2204398, "name": "Шипувате"}, {"id": 2204485, "name": "Шляховий"}, {"id": 2210748, "name": "Шмакове"}, {"id": 2208398, "name": "Шостаківка"}, {"id": 2200016, "name": "Шостка"}, {"id": 2204464, "name": "Шпаківка"}, {"id": 2208367, "name": "Шпола"}, {"id": 2214198, "name": "Штерівка"}, {"id": 5613200, "name": "Штрба"}, {"id": 2210788, "name": "Щебеневий"}, {"id": 2214236, "name": "Щебенка"}, {"id": 2200327, "name": "Щебзавод"}, {"id": 2218119, "name": "Щербин"}, {"id": 2218082, "name": "Щирець 2"}, {"id": 2214202, "name": "Щотове"}, {"id": 2200257, "name": "Юрківка"}, {"id": 2204541, "name": "Юсківці"}, {"id": 2201785, "name": "Яблунець"}, {"id": 2218117, "name": "Яблунька"}, {"id": 2208507, "name": "Явкине"}, {"id": 2218116, "name": "Явора"}, {"id": 2218518, "name": "Ягодин"}, {"id": 2200059, "name": "Яготин"}, {"id": 2218181, "name": "Ягільниця"}, {"id": 2214046, "name": "Язикове"}, {"id": 2210675, "name": "Якимівка"}, {"id": 2208393, "name": "Яковлівка"}, {"id": 2214066, "name": "Ямпіль"}, {"id": 2200011, "name": "Янпіль"}, {"id": 2210759, "name": "Янцеве"}, {"id": 2218255, "name": "Яремче"}, {"id": 2204568, "name": "Яреськи"}, {"id": 2210729, "name": "Ярка"}, {"id": 2200231, "name": "Ярмолинці"}, {"id": 2200259, "name": "Ярошенка"}, {"id": 2218657, "name": "Ярчівці"}, {"id": 2218114, "name": "Ясениця"}, {"id": 2218403, "name": "Ясенів-Пільний"}, {"id": 2214010, "name": "Ясинувата-Пасажирська"}, {"id": 2208514, "name": "Ясна Зоря"}, {"id": 5360921, "name": "Ясси"}, {"id": 2218213, "name": "Ясіня"}, {"id": 2204555, "name": "Яхнівка"}, {"id": 2301581, "name": "Ґирбова"}];
+</script>
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      if (tg.MainButton) {
+        tg.MainButton.hide();
+      }
+    }
+
+    // Helper to open connect helper in external browser
+    window.openConnectExternal = function(e) {
+      if (e) e.preventDefault();
+      const url = "https://uz-proxy.holan-uz.workers.dev/connect";
+      if (window.Telegram?.WebApp?.openLink) {
+        window.Telegram.WebApp.openLink(url, { try_instant_view: false });
+      } else {
+        window.open(url, "_blank");
+      }
+    };
+
+    // Cloudflare Worker Proxy Endpoints
+    const PROXY_BASE = "https://uz-proxy.holan-uz.workers.dev/api/trips";
+    const PASSENGERS_ENDPOINT = "https://uz-proxy.holan-uz.workers.dev/api/passengers";
+    const PROFILE_ENDPOINT = "https://uz-proxy.holan-uz.workers.dev/api/profile";
+    const USER_TOKEN_ENDPOINT = "https://uz-proxy.holan-uz.workers.dev/api/user-token";
+
+    // URL & Telegram user parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.startsWith('#') ? window.location.hash.substring(1) : window.location.hash);
+    const tokenFromUrl = urlParams.get('token') || hashParams.get('token') || '';
+    if (tokenFromUrl) {
+      localStorage.setItem("uz_custom_token", tokenFromUrl.trim());
+    }
+
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    const tgUserId = tgUser ? tgUser.id : (urlParams.get('user_id') || '');
+
+    // Custom Token management in localStorage
+    let activeToken = localStorage.getItem("uz_custom_token") || "";
+
+    // Date setup (uses local device timezone instead of UTC)
+    const dateInput = document.getElementById('dateInput');
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const formatDate = (d) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    // Default to tomorrow
+    const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    dateInput.min = formatDate(today);
+    dateInput.value = formatDate(tomorrow);
+
+    function setDateOffset(days) {
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + days);
+      dateInput.value = formatDate(d);
+      highlightDatePills();
+    }
+
+    document.getElementById('pillToday').onclick = () => setDateOffset(0);
+    document.getElementById('pillTomorrow').onclick = () => setDateOffset(1);
+    document.getElementById('pillAfterTomorrow').onclick = () => setDateOffset(2);
+
+    function highlightDatePills() {
+      const val = dateInput.value;
+      document.querySelectorAll('#datePills .pill').forEach(p => p.classList.remove('active'));
+
+      const dToday = formatDate(today);
+      const dTomorrow = formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1));
+      const dAfterTomorrow = formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2));
+
+      if (val === dToday) document.getElementById('pillToday').classList.add('active');
+      else if (val === dTomorrow) document.getElementById('pillTomorrow').classList.add('active');
+      else if (val === dAfterTomorrow) document.getElementById('pillAfterTomorrow').classList.add('active');
+    }
+    dateInput.onchange = highlightDatePills;
+    dateInput.addEventListener('click', () => {
+      if (typeof dateInput.showPicker === 'function') {
+        try { dateInput.showPicker(); } catch (e) {}
+      }
+    });
+    highlightDatePills();
+
+    // Threshold pills (Fixed number or Smart Anomaly mode)
+    let currentThreshold = 5;
+    const thresholdHint = document.getElementById('thresholdHint');
+
+    document.querySelectorAll('#thresholdPills .pill').forEach(pill => {
+      pill.onclick = () => {
+        document.querySelectorAll('#thresholdPills .pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const val = pill.dataset.val;
+
+        if (val === 'auto') {
+          currentThreshold = 'auto';
+          if (thresholdHint) {
+            thresholdHint.innerHTML = '⚡ <b>Розумний режим:</b> бот аналізує швидкість розпродажу та сповістить про <i>аномальний сплеск або викуп блоку квитків</i>, навіть якщо місць ще багато!';
+          }
+        } else {
+          currentThreshold = parseInt(val, 10);
+          if (thresholdHint) {
+            thresholdHint.textContent = `Сповістить, коли кількість квитків стане меншою або рівною ${currentThreshold}.`;
+          }
+        }
+        tg?.HapticFeedback?.selectionChanged();
+      };
+    });
+
+    // Autocomplete & Stations
+    const fromInput = document.getElementById('fromInput');
+    const toInput = document.getElementById('toInput');
+    const fromDropdown = document.getElementById('fromDropdown');
+    const toDropdown = document.getElementById('toDropdown');
+
+    fromInput.value = "Київ";
+    toInput.value = "Львів";
+
+    function setupAutocomplete(input, dropdown) {
+      input.addEventListener('input', async () => {
+        const query = input.value.trim().toLowerCase();
+        if (query.length < 2) {
+          dropdown.style.display = 'none';
+          return;
+        }
+        const list = window.UZ_STATIONS || (typeof UZ_STATIONS !== 'undefined' ? UZ_STATIONS : []);
+        let matches = list.filter(s => s.name.toLowerCase().includes(query)).slice(0, 8);
+
+        if (matches.length === 0) {
+          try {
+            const resp = await fetch(`https://uz-proxy.holan-uz.workers.dev/api/stations?search=${encodeURIComponent(query)}`);
+            const data = await resp.json();
+            if (Array.isArray(data)) {
+              matches = data.slice(0, 8);
+            }
+          } catch(e) {}
+        }
+
+        if (matches.length === 0) {
+          dropdown.style.display = 'none';
+          return;
+        }
+        dropdown.innerHTML = matches.map(s => `<div class="dropdown-item" data-name="${s.name}">${s.name}</div>`).join('');
+        dropdown.style.display = 'block';
+      });
+
+      dropdown.addEventListener('click', (e) => {
+        if (e.target.classList.contains('dropdown-item')) {
+          input.value = e.target.dataset.name;
+          dropdown.style.display = 'none';
+        }
+      });
+    }
+
+    setupAutocomplete(fromInput, fromDropdown);
+    setupAutocomplete(toInput, toDropdown);
+
+    document.addEventListener('click', (e) => {
+      if (!fromInput.contains(e.target)) fromDropdown.style.display = 'none';
+      if (!toInput.contains(e.target)) toDropdown.style.display = 'none';
+    });
+
+    // Pill quick select
+    document.querySelectorAll('#fromPills .pill').forEach(p => {
+      p.onclick = () => { fromInput.value = p.dataset.city; };
+    });
+    document.querySelectorAll('#toPills .pill').forEach(p => {
+      p.onclick = () => { toInput.value = p.dataset.city; };
+    });
+
+    // Swap button
+    document.getElementById('swapBtn').onclick = () => {
+      const temp = fromInput.value;
+      fromInput.value = toInput.value;
+      toInput.value = temp;
+    };
+
+    // Error handling
+    const errorBox = document.getElementById('errorBox');
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function resolveStationId(name) {
+      const clean = name.trim().toLowerCase();
+      const list = window.UZ_STATIONS || (typeof UZ_STATIONS !== 'undefined' ? UZ_STATIONS : []);
+
+      // 1. Exact match
+      const st = list.find(s => s.name.toLowerCase() === clean);
+      if (st) return st.id;
+
+      // 2. Starts with / includes match in static dictionary
+      const starts = list.find(s => s.name.toLowerCase().startsWith(clean));
+      if (starts) return starts.id;
+
+      const partial = list.find(s => s.name.toLowerCase().includes(clean));
+      if (partial) return partial.id;
+
+      // 3. Fallback: live query to UZ through proxy
+      try {
+        const resp = await fetch(`https://uz-proxy.holan-uz.workers.dev/api/stations?search=${encodeURIComponent(name.trim())}`);
+        const data = await resp.json();
+        if (Array.isArray(data) && data.length > 0) {
+          return data[0].id;
+        }
+      } catch (e) {
+        console.error("Live station search failed:", e);
+      }
+
+      return null;
+    }
+
+    // ==================== SEARCH & CARDS LOGIC ====================
+    let loadedTrips = [];
+    const selectedTrains = new Set();
+    const trainClassesMap = {}; // trainNum -> Set of classIds
+
+    function formatDuration(sec) {
+      if (!sec || sec <= 0) return "";
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      return `${h} год ${m} хв`;
+    }
+
+    function formatTime(unixSec) {
+      if (!unixSec) return "--:--";
+      const d = new Date(unixSec * 1000);
+      return d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Kyiv' });
+    }
+
+    async function searchTripsInApp() {
+      errorBox.style.display = 'none';
+      const from = fromInput.value.trim();
+      const to = toInput.value.trim();
+      const date = dateInput.value;
+
+      if (!from) return showError('Вкажіть станцію відправлення.');
+      if (!to) return showError('Вкажіть станцію прибуття.');
+      if (from.toLowerCase() === to.toLowerCase()) return showError('Станції відправлення та прибуття не можуть збігатися.');
+      if (!date) return showError('Оберіть дату поїздки.');
+
+      const searchBtn = document.getElementById('searchBtn');
+      const searchBtnText = document.getElementById('searchBtnText');
+      searchBtnText.innerHTML = '<span class="loading-spinner"></span> Шукаю рейси...';
+      searchBtn.disabled = true;
+
+      const fromId = await resolveStationId(from);
+      const toId = await resolveStationId(to);
+
+      if (!fromId) {
+        searchBtnText.textContent = '🔍 Знайти рейси (показати картки)';
+        searchBtn.disabled = false;
+        return showError(`Станцію "${from}" не знайдено в базі.`);
+      }
+      if (!toId) {
+        searchBtnText.textContent = '🔍 Знайти рейси';
+        searchBtn.disabled = false;
+        return showError(`Станцію "${to}" не знайдено в базі.`);
+      }
+
+      const resultsSection = document.getElementById('resultsSection');
+      const tripsList = document.getElementById('tripsList');
+      const resultsTitle = document.getElementById('resultsTitle');
+
+      try {
+        const queryUrl = `${PROXY_BASE}?from=${fromId}&to=${toId}&date=${date}`;
+        const resp = await fetch(queryUrl);
+        const data = await resp.json();
+
+        if (data.recaptcha_link) {
+          showError('УЗ вимагає проходження верифікації reCAPTCHA. Будь ласка, скористайтеся пошуком через чат бота.');
+          return;
+        }
+
+        let rawTrips = [];
+        if (Array.isArray(data)) {
+          rawTrips = data;
+        } else if (data.data && Array.isArray(data.data.trips)) {
+          rawTrips = data.data.trips;
+        }
+
+        if (!rawTrips || rawTrips.length === 0) {
+          tripsList.innerHTML = '<div style="text-align: center; color: var(--hint); padding: 20px 0;">Рейсів або вільних місць на цю дату не знайдено.</div>';
+          resultsSection.style.display = 'block';
+          return;
+        }
+
+        loadedTrips = rawTrips;
+        selectedTrains.clear();
+        updateSelectedUI();
+
+        resultsTitle.textContent = `🚆 Доступні рейси (${rawTrips.length}):`;
+        tripsList.innerHTML = rawTrips.map((item, idx) => {
+          const train = item.train || {};
+          const num = train.number || item.train_number || `№ ${idx+1}`;
+          const depTime = formatTime(item.depart_at);
+          const arrTime = formatTime(item.arrive_at);
+          const durSec = (item.arrive_at && item.depart_at) ? (item.arrive_at - item.depart_at) : 0;
+          const durStr = formatDuration(durSec);
+
+          const fromSt = train.station_from || from;
+          const toSt = train.station_to || to;
+
+          const wagonClasses = train.wagon_classes || item.wagon_classes || [];
+          let classesHtml = '';
+          let totalSeats = 0;
+
+          if (wagonClasses && wagonClasses.length > 0) {
+            classesHtml = wagonClasses.map(wc => {
+              const places = wc.free_seats || wc.places || 0;
+              totalSeats += places;
+              const name = wc.name || wc.id || 'Місце';
+              const classId = wc.id || wc.name;
+              const price = wc.price ? `${Math.round(wc.price / 100)} грн` : '';
+              return `<span class="class-tag" data-class="${classId}" data-train="${num}" title="Натисніть для вибору цього класу">${name}: <strong>${places}</strong> ${price ? `(${price})` : ''}</span>`;
+            }).join('');
+          }
+
+          const seatsBadge = totalSeats > 0 
+            ? `<span class="seats-count-badge">🎟️ ${totalSeats} місць</span>`
+            : `<span class="seats-count-badge zero">🎟️ 0 місць</span>`;
+
+          return `
+            <div class="trip-card" data-train="${num}" id="card_${num.replace(/\s+/g, '_')}">
+              <div class="trip-header">
+                <div class="train-badge">
+                  <span>🚆 № ${num}</span>
+                  ${seatsBadge}
+                </div>
+                <div class="checkbox-icon">✓</div>
+              </div>
+              <div class="trip-times">
+                <div class="time-block">
+                  <div class="time-val">${depTime}</div>
+                  <div class="station-val">${fromSt}</div>
+                </div>
+                <div class="duration-block">
+                  <div>${durStr}</div>
+                  <div class="duration-line"></div>
+                </div>
+                <div class="time-block right">
+                  <div class="time-val">${arrTime}</div>
+                  <div class="station-val">${toSt}</div>
+                </div>
+              </div>
+              <div class="classes-grid">
+                ${classesHtml || '<span class="no-seats-tag">Немає вільних місць</span>'}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        resultsSection.style.display = 'block';
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+        // Add click listeners to cards
+        document.querySelectorAll('.trip-card').forEach(card => {
+          card.onclick = (e) => {
+            // If user clicked directly on a class-tag, handle class-tag selection
+            const tag = e.target.closest('.class-tag');
+            if (tag) {
+              const trainNum = card.dataset.train;
+              const classId = tag.dataset.class;
+
+              if (!trainClassesMap[trainNum]) {
+                trainClassesMap[trainNum] = new Set();
+              }
+
+              if (trainClassesMap[trainNum].has(classId)) {
+                trainClassesMap[trainNum].delete(classId);
+                tag.classList.remove('selected');
+              } else {
+                trainClassesMap[trainNum].add(classId);
+                tag.classList.add('selected');
+                // Automatically ensure card itself is selected
+                if (!selectedTrains.has(trainNum)) {
+                  selectedTrains.add(trainNum);
+                  card.classList.add('selected');
+                }
+              }
+
+              updateSelectedUI();
+              tg?.HapticFeedback?.selectionChanged();
+              return;
+            }
+
+            // Normal card selection toggle
+            const trainNum = card.dataset.train;
+            if (selectedTrains.has(trainNum)) {
+              selectedTrains.delete(trainNum);
+              card.classList.remove('selected');
+              // Clear selected classes for this train
+              if (trainClassesMap[trainNum]) {
+                delete trainClassesMap[trainNum];
+                card.querySelectorAll('.class-tag').forEach(t => t.classList.remove('selected'));
+              }
+            } else {
+              selectedTrains.add(trainNum);
+              card.classList.add('selected');
+            }
+            updateSelectedUI();
+            tg?.HapticFeedback?.selectionChanged();
+          };
+        });
+
+      } catch (err) {
+        console.error(err);
+        showError('Не вдалося завантажити розклад з УЗ. Спробуйте ще раз.');
+      } finally {
+        searchBtnText.textContent = '🔍 Знайти рейси';
+        searchBtn.disabled = false;
+      }
+    }
+
+    function updateSelectedUI() {
+      const selectAllBtn = document.getElementById('selectAllBtn');
+      const submitBtnText = document.getElementById('submitBtnText');
+      const trainInput = document.getElementById('trainInput');
+
+      if (selectedTrains.size === loadedTrips.length && loadedTrips.length > 0) {
+        selectAllBtn.textContent = 'Зняти вибір';
+      } else {
+        selectAllBtn.textContent = 'Обрати всі';
+      }
+
+      // Check if any specific classes selected on cards
+      let totalClassFilters = 0;
+      for (const t of selectedTrains) {
+        if (trainClassesMap[t] && trainClassesMap[t].size > 0) {
+          totalClassFilters += trainClassesMap[t].size;
+        }
+      }
+
+      if (selectedTrains.size > 0) {
+        const listStr = Array.from(selectedTrains).join(', ');
+        const classNote = totalClassFilters > 0 ? ` (${totalClassFilters} кл.)` : '';
+        submitBtnText.textContent = `Моніторити обрані рейси (${selectedTrains.size}${classNote}) 🚀`;
+        trainInput.value = listStr;
+      } else {
+        submitBtnText.textContent = 'Запустити моніторинг всіх 🚀';
+        trainInput.value = '';
+      }
+    }
+
+    document.getElementById('selectAllBtn').onclick = () => {
+      if (selectedTrains.size === loadedTrips.length) {
+        selectedTrains.clear();
+        for (const k in trainClassesMap) delete trainClassesMap[k];
+        document.querySelectorAll('.trip-card').forEach(c => {
+          c.classList.remove('selected');
+          c.querySelectorAll('.class-tag').forEach(t => t.classList.remove('selected'));
+        });
+      } else {
+        loadedTrips.forEach(item => {
+          const num = item.train?.number || item.train_number;
+          if (num) selectedTrains.add(num);
+        });
+        document.querySelectorAll('.trip-card').forEach(c => c.classList.add('selected'));
+      }
+      updateSelectedUI();
+      tg?.HapticFeedback?.impactOccurred('medium');
+    };
+
+    document.getElementById('searchBtn').onclick = searchTripsInApp;
+
+    // --- UZ Profile & Custom Token Management ---
+    const profileCard = document.getElementById('profileCard');
+    const profileName = document.getElementById('profileName');
+    const profileStatus = document.getElementById('profileStatus');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const toggleTokenPanelBtn = document.getElementById('toggleTokenPanelBtn');
+    const tokenPanel = document.getElementById('tokenPanel');
+    const customTokenInput = document.getElementById('customTokenInput');
+    const saveTokenBtn = document.getElementById('saveTokenBtn');
+    const tokenStatusMsg = document.getElementById('tokenStatusMsg');
+
+    toggleTokenPanelBtn.addEventListener('click', () => {
+      const isHidden = tokenPanel.style.display === 'none' || !tokenPanel.style.display;
+      tokenPanel.style.display = isHidden ? 'block' : 'none';
+      toggleTokenPanelBtn.textContent = isHidden ? '✕ Закрити' : '🔑 Токен';
+      if (isHidden && activeToken) {
+        customTokenInput.value = activeToken;
+      }
+      tg?.HapticFeedback?.selectionChanged();
+    });
+
+    function cleanTokenString(str) {
+      if (!str) return '';
+      let t = str.trim();
+      const m = t.match(/(eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)/);
+      if (m) return m[1].trim();
+      if (t.startsWith('/token')) {
+        t = t.substring(6).trim();
+      }
+      t = t.replace(/^Bearer\s+/i, '').trim();
+      return t;
+    }
+
+    function updateConnectBannerVisibility() {
+      const banner = document.getElementById('connectAccountBanner');
+      if (banner) {
+        banner.style.display = (!activeToken && bookToggle && bookToggle.checked) ? 'flex' : 'none';
+      }
+    }
+
+    function updatePassengerSectionVisibility() {
+      const explainer = document.getElementById('autoBookExplainer');
+      if (bookToggle && bookToggle.checked) {
+        if (explainer) explainer.style.display = 'block';
+        if (activeToken) {
+          passengerSection.style.display = 'block';
+          loadSavedPassengers();
+        } else {
+          passengerSection.style.display = 'none';
+        }
+      } else {
+        if (explainer) explainer.style.display = 'none';
+        passengerSection.style.display = 'none';
+      }
+      updateConnectBannerVisibility();
+    }
+
+    async function syncTokenFromBot() {
+      if (!tgUserId) return;
+      try {
+        const resp = await fetch(USER_TOKEN_ENDPOINT + '?user_id=' + encodeURIComponent(tgUserId));
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && data.token) {
+            const syncedToken = cleanTokenString(data.token);
+            if (syncedToken && syncedToken !== activeToken) {
+              activeToken = syncedToken;
+              localStorage.setItem('uz_custom_token', activeToken);
+              if (customTokenInput) customTokenInput.value = activeToken;
+              await loadUserProfile();
+              updatePassengerSectionVisibility();
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Could not sync token from bot:', err);
+      }
+    }
+
+    async function loadUserProfile() {
+      updatePassengerSectionVisibility();
+      const logoutRow = document.getElementById('logoutRow');
+      if (logoutRow) logoutRow.style.display = activeToken ? 'block' : 'none';
+
+      if (!activeToken) {
+        profileName.textContent = 'Акаунт не підключено';
+        profileAvatar.textContent = '👤';
+        profileStatus.innerHTML = '<span style="color: var(--hint);">Автономний пошук • Натисніть «🔑 Токен»</span>';
+        return;
+      }
+
+      try {
+        let fetchUrl = PROFILE_ENDPOINT;
+        const headers = { 'Authorization': 'Bearer ' + activeToken };
+        fetchUrl += '?token=' + encodeURIComponent(activeToken);
+        const resp = await fetch(fetchUrl, { headers });
+        if (resp.ok) {
+          const prof = await resp.json();
+          let name = '';
+          if (prof.passenger && prof.passenger.first_name) {
+            name = `${prof.passenger.first_name} ${prof.passenger.last_name || ''}`.trim();
+          }
+          if (!name) name = prof.phone || prof.email || `ID: ${prof.id}`;
+
+          profileName.textContent = name;
+          if (prof.passenger && prof.passenger.first_name) {
+            profileAvatar.textContent = prof.passenger.first_name.charAt(0).toUpperCase();
+          } else {
+            profileAvatar.textContent = '👤';
+          }
+          profileStatus.innerHTML = '<span style="color: #34c759;">🟢 Підключено свій акаунт</span>' + (prof.phone ? ` • ${prof.phone}` : '');
+        } else {
+          profileName.textContent = 'Акаунт УЗ';
+          profileStatus.innerHTML = '<span style="color: #ff9500;">⚪ Токен потребує оновлення</span>';
+        }
+      } catch (e) {
+        console.error('Error fetching profile:', e);
+        profileName.textContent = 'Акаунт УЗ';
+        profileStatus.innerHTML = '<span style="color: var(--hint);">Автономний режим</span>';
+      }
+    }
+
+    saveTokenBtn.addEventListener('click', async () => {
+      const raw = customTokenInput.value.trim();
+      const token = cleanTokenString(raw);
+      if (!token || token.split('.').length !== 3) {
+        tokenStatusMsg.style.display = 'block';
+        tokenStatusMsg.style.color = '#ff3b30';
+        tokenStatusMsg.textContent = '⚠️ Некоректний токен (має бути у форматі JWT eyJ...)';
+        tg?.HapticFeedback?.notificationOccurred('error');
+        return;
+      }
+
+      saveTokenBtn.disabled = true;
+      saveTokenBtn.textContent = '...';
+      tokenStatusMsg.style.display = 'block';
+      tokenStatusMsg.style.color = 'var(--hint)';
+      tokenStatusMsg.textContent = '⏳ Перевірка токена в УЗ...';
+
+      try {
+        const verifyUrl = PROFILE_ENDPOINT + '?token=' + encodeURIComponent(token);
+        const resp = await fetch(verifyUrl, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (resp.ok) {
+          activeToken = token;
+          localStorage.setItem('uz_custom_token', token);
+          if (tgUserId) {
+            fetch(USER_TOKEN_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: String(tgUserId), token: activeToken })
+            }).catch(console.warn);
+          }
+          tokenStatusMsg.style.color = '#34c759';
+          tokenStatusMsg.textContent = '✅ Акаунт успішно підключено!';
+          tg?.HapticFeedback?.notificationOccurred('success');
+          await loadUserProfile();
+          savedPassengers = [];
+          selectedPassengerIds.clear();
+          if (bookToggle.checked) {
+            loadSavedPassengers();
+          }
+          setTimeout(() => {
+            tokenPanel.style.display = 'none';
+            toggleTokenPanelBtn.textContent = '🔑 Токен';
+          }, 1500);
+        } else {
+          tokenStatusMsg.style.color = '#ff3b30';
+          tokenStatusMsg.textContent = '❌ УЗ не прийняла токен. Перевірте, чи не завершилась сесія.';
+          tg?.HapticFeedback?.notificationOccurred('error');
+        }
+      } catch (err) {
+        tokenStatusMsg.style.color = '#ff3b30';
+        tokenStatusMsg.textContent = '❌ Помилка з\'єднання з сервером перевірки.';
+      } finally {
+        saveTokenBtn.disabled = false;
+        saveTokenBtn.textContent = 'Зберегти';
+      }
+    });
+
+    const logoutTokenBtn = document.getElementById('logoutTokenBtn');
+    if (logoutTokenBtn) {
+      logoutTokenBtn.addEventListener('click', async () => {
+        activeToken = '';
+        localStorage.removeItem('uz_custom_token');
+        customTokenInput.value = '';
+        savedPassengers = [];
+        selectedPassengerIds.clear();
+        if (tgUserId) {
+          try {
+            await fetch(USER_TOKEN_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: String(tgUserId), token: '' })
+            });
+          } catch (e) {}
+        }
+        tokenStatusMsg.style.display = 'block';
+        tokenStatusMsg.style.color = 'var(--hint)';
+        tokenStatusMsg.textContent = 'Ви успішно вийшли з акаунта.';
+        tg?.HapticFeedback?.notificationOccurred('warning');
+        await loadUserProfile();
+        if (bookToggle && bookToggle.checked) {
+          loadSavedPassengers();
+        }
+        setTimeout(() => {
+          tokenPanel.style.display = 'none';
+          toggleTokenPanelBtn.textContent = '🔑 Токен';
+        }, 1200);
+      });
+    }
+
+    // Initial Profile Load & Token Sync from Bot
+    loadUserProfile();
+    syncTokenFromBot();
+
+    // --- Saved Passengers Management for Auto-booking ---
+    let savedPassengers = [];
+    const selectedPassengerIds = new Set();
+    const bookToggle = document.getElementById('bookToggle');
+    const passengerSection = document.getElementById('passengerSection');
+    const passengerList = document.getElementById('passengerList');
+    const passengerCountBadge = document.getElementById('passengerCountBadge');
+
+    let currentSeatingPreference = 'nearby'; // 'nearby', 'same_wagon', 'any'
+    const seatingPreferenceGroup = document.getElementById('seatingPreferenceGroup');
+    const seatingPreferenceHint = document.getElementById('seatingPreferenceHint');
+
+    document.querySelectorAll('#seatingPills .pill').forEach(pill => {
+      pill.onclick = () => {
+        document.querySelectorAll('#seatingPills .pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentSeatingPreference = pill.dataset.pref || 'nearby';
+        if (seatingPreferenceHint) {
+          if (currentSeatingPreference === 'nearby') {
+            seatingPreferenceHint.textContent = 'Бот шукатиме вільні місця виключно поруч в одній кабінці або купе (до 4-6 місць).';
+          } else if (currentSeatingPreference === 'same_wagon') {
+            seatingPreferenceHint.textContent = 'Квитки будуть гарантовано оформлені в одному вагоні (в купе або по сусідству).';
+          } else {
+            seatingPreferenceHint.textContent = 'Квитки можуть бути розподілені по будь-яких вільних вагонах поїзда.';
+          }
+        }
+        tg?.HapticFeedback?.selectionChanged();
+      };
+    });
+
+    function updatePassengerBadge() {
+      const count = selectedPassengerIds.size;
+      let label = `${count} квиток`;
+      if (count >= 2 && count <= 4) label = `${count} квитки`;
+      else if (count >= 5 || count === 0) label = `${count} квитків`;
+      passengerCountBadge.textContent = label;
+
+      // Show/hide seating preference group if > 1 passenger
+      if (seatingPreferenceGroup) {
+        seatingPreferenceGroup.style.display = count > 1 ? 'block' : 'none';
+      }
+    }
+
+    async function loadSavedPassengers() {
+      if (!activeToken) {
+        passengerSection.style.display = 'none';
+        return;
+      }
+
+      if (savedPassengers.length > 0) {
+        renderPassengers();
+        return;
+      }
+      try {
+        passengerList.innerHTML = '<div style="font-size: 12px; color: var(--hint); padding: 4px 0;">Завантаження з акаунта УЗ...</div>';
+        let pUrl = PASSENGERS_ENDPOINT;
+        const headers = { 'Authorization': 'Bearer ' + activeToken };
+        pUrl += '?token=' + encodeURIComponent(activeToken);
+        const resp = await fetch(pUrl, { headers });
+        if (resp.ok) {
+          const data = await resp.json();
+          savedPassengers = Array.isArray(data) ? data : (data.data || []);
+          if (savedPassengers.length > 0) {
+            // Default select the main passenger or first
+            const mainP = savedPassengers.find(p => p.main) || savedPassengers[0];
+            if (mainP && selectedPassengerIds.size === 0) {
+              selectedPassengerIds.add(mainP.id);
+            }
+            renderPassengers();
+          } else {
+            passengerList.innerHTML = '<div style="font-size: 12px; color: var(--hint);">В акаунті не знайдено збережених пасажирів. Додайте їх у застосунку УЗ.</div>';
+          }
+        } else {
+          passengerList.innerHTML = '<div style="font-size: 12px; color: #ff5252;">Не вдалося завантажити список пасажирів.</div>';
+        }
+      } catch (e) {
+        console.error('Error fetching passengers:', e);
+        passengerList.innerHTML = '<div style="font-size: 12px; color: #ff5252;">Помилка зв\'язку з сервером пасажирів.</div>';
+      }
+    }
+
+    function renderPassengers() {
+      if (!savedPassengers || savedPassengers.length === 0) {
+        passengerList.innerHTML = '<div style="font-size: 12px; color: var(--hint);">Немає збережених пасажирів.</div>';
+        return;
+      }
+      passengerList.innerHTML = '';
+      savedPassengers.forEach(p => {
+        const pill = document.createElement('div');
+        pill.className = 'pill' + (selectedPassengerIds.has(p.id) ? ' active' : '');
+        
+        let privilegeNote = '';
+        if (p.privilege && p.privilege.name) {
+          privilegeNote = ` 🎓`;
+        } else if (p.main) {
+          privilegeNote = ` ⭐`;
+        }
+        
+        pill.textContent = `${p.first_name} ${p.last_name}${privilegeNote}`;
+        pill.onclick = () => {
+          if (selectedPassengerIds.has(p.id)) {
+            // Prevent deselecting if it's the only selected passenger
+            if (selectedPassengerIds.size > 1) {
+              selectedPassengerIds.delete(p.id);
+              pill.classList.remove('active');
+            } else {
+              tg?.HapticFeedback?.notificationOccurred('warning');
+            }
+          } else {
+            selectedPassengerIds.add(p.id);
+            pill.classList.add('active');
+          }
+          updatePassengerBadge();
+          tg?.HapticFeedback?.selectionChanged();
+        };
+        passengerList.appendChild(pill);
+      });
+      updatePassengerBadge();
+    }
+
+    bookToggle.addEventListener('change', () => {
+      updatePassengerSectionVisibility();
+      tg?.HapticFeedback?.selectionChanged();
+    });
+
+    // Form submission
+    function submitForm() {
+      errorBox.style.display = 'none';
+      const from = fromInput.value.trim();
+      const to = toInput.value.trim();
+      const date = dateInput.value;
+      const autoBook = document.getElementById('bookToggle').checked;
+
+      if (!from) return showError('Вкажіть станцію відправлення.');
+      if (!to) return showError('Вкажіть станцію прибуття.');
+      if (from.toLowerCase() === to.toLowerCase()) return showError('Станції відправлення та прибуття не можуть збігатися.');
+      if (!date) return showError('Оберіть дату поїздки.');
+      if (autoBook && !activeToken) return showError('Для автоброні необхідно підключити акаунт УЗ. Натисніть «🔑 Токен» або вимкніть автобронь.');
+
+      const chosenTrains = Array.from(selectedTrains);
+      const manualTrain = document.getElementById('trainInput').value.trim();
+
+      // Convert trainClassesMap sets to arrays
+      const trainClassesPayload = {};
+      const allSelectedClasses = new Set();
+      for (const t of chosenTrains) {
+        if (trainClassesMap[t] && trainClassesMap[t].size > 0) {
+          trainClassesPayload[t] = Array.from(trainClassesMap[t]);
+          trainClassesMap[t].forEach(c => allSelectedClasses.add(c));
+        }
+      }
+
+      const chosenPassengerIds = Array.from(selectedPassengerIds);
+      const passengerCount = chosenPassengerIds.length > 0 ? chosenPassengerIds.length : 1;
+
+      const payload = {
+        action: "create_monitor",
+        from: from,
+        to: to,
+        date: date,
+        threshold: currentThreshold, // number (e.g. 5) or 'auto'
+        train: manualTrain || null,
+        selected_trains: chosenTrains,
+        classes: Array.from(allSelectedClasses),
+        train_classes: trainClassesPayload,
+        book: autoBook,
+        passengers: chosenPassengerIds,
+        passenger_count: passengerCount,
+        seating_preference: currentSeatingPreference,
+        token: activeToken || null
+      };
+
+      if (tg && tg.sendData) {
+        tg.HapticFeedback?.notificationOccurred('success');
+        tg.sendData(JSON.stringify(payload));
+      } else {
+        const thresholdArg = currentThreshold === 'auto' ? 'auto' : currentThreshold;
+        let cmd = `/monitor ${from} ${to} ${date} ${thresholdArg}`;
+        if (chosenTrains.length > 0) cmd += ` ${chosenTrains[0]}`;
+        else if (manualTrain) cmd += ` ${manualTrain}`;
+        if (allSelectedClasses.size > 0) cmd += ` --class=${Array.from(allSelectedClasses).join(',')}`;
+        if (autoBook) {
+          cmd += ` --book`;
+          if (chosenPassengerIds.length > 1) {
+            cmd += ` --passengers=${chosenPassengerIds.join(',')}`;
+            if (currentSeatingPreference === 'nearby') cmd += ` --nearby`;
+            else if (currentSeatingPreference === 'same_wagon') cmd += ` --same-wagon`;
+          }
+        }
+        alert(`✅ Створено! Команда для Telegram:\n\n${cmd}`);
+      }
+    }
+
+    document.getElementById('submitBtn').onclick = submitForm;
+  </script>
+</body>
+</html>
