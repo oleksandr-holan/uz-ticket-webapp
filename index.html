@@ -651,9 +651,9 @@
       <div class="profile-info">
         <div class="profile-avatar" id="profileAvatar">👤</div>
         <div class="profile-text">
-          <div class="profile-name" id="profileName">Завантаження профілю...</div>
+          <div class="profile-name" id="profileName">Акаунт не підключено</div>
           <div class="profile-status" id="profileStatus">
-            <span class="status-dot">⚪</span> Перевірка з'єднання
+            <span style="color: var(--hint);">Автономний пошук • Натисніть «🔑 Токен»</span>
           </div>
         </div>
       </div>
@@ -1324,6 +1324,17 @@ window.UZ_STATIONS = [{"id": 2210770, "name": "Євпаторія-Курорт"}
     const saveTokenBtn = document.getElementById('saveTokenBtn');
     const tokenStatusMsg = document.getElementById('tokenStatusMsg');
 
+    // DOM Elements for booking and passengers
+    const bookToggle = document.getElementById('bookToggle');
+    const passengerSection = document.getElementById('passengerSection');
+    const passengerList = document.getElementById('passengerList');
+    const passengerCountBadge = document.getElementById('passengerCountBadge');
+    const seatingPreferenceGroup = document.getElementById('seatingPreferenceGroup');
+    const seatingPreferenceHint = document.getElementById('seatingPreferenceHint');
+    let savedPassengers = [];
+    const selectedPassengerIds = new Set();
+    let currentSeatingPreference = 'nearby'; // 'nearby', 'same_wagon', 'any'
+
     toggleTokenPanelBtn.addEventListener('click', () => {
       const isHidden = tokenPanel.style.display === 'none' || !tokenPanel.style.display;
       tokenPanel.style.display = isHidden ? 'block' : 'none';
@@ -1403,6 +1414,9 @@ window.UZ_STATIONS = [{"id": 2210770, "name": "Євпаторія-Курорт"}
         profileStatus.innerHTML = '<span style="color: var(--hint);">Автономний пошук • Натисніть «🔑 Токен»</span>';
         return;
       }
+
+      profileName.textContent = 'Завантаження профілю...';
+      profileStatus.innerHTML = '<span class="status-dot">⚪</span> Перевірка з\'єднання...';
 
       try {
         let fetchUrl = PROFILE_ENDPOINT;
@@ -1526,21 +1540,7 @@ window.UZ_STATIONS = [{"id": 2210770, "name": "Євпаторія-Курорт"}
       });
     }
 
-    // Initial Profile Load & Token Sync from Bot
-    loadUserProfile();
-    syncTokenFromBot();
-
-    // --- Saved Passengers Management for Auto-booking ---
-    let savedPassengers = [];
-    const selectedPassengerIds = new Set();
-    const bookToggle = document.getElementById('bookToggle');
-    const passengerSection = document.getElementById('passengerSection');
-    const passengerList = document.getElementById('passengerList');
-    const passengerCountBadge = document.getElementById('passengerCountBadge');
-
-    let currentSeatingPreference = 'nearby'; // 'nearby', 'same_wagon', 'any'
-    const seatingPreferenceGroup = document.getElementById('seatingPreferenceGroup');
-    const seatingPreferenceHint = document.getElementById('seatingPreferenceHint');
+    // --- Seating Preference Pills ---
 
     document.querySelectorAll('#seatingPills .pill').forEach(pill => {
       pill.onclick = () => {
@@ -1724,6 +1724,10 @@ window.UZ_STATIONS = [{"id": 2210770, "name": "Євпаторія-Курорт"}
     }
 
     document.getElementById('submitBtn').onclick = submitForm;
+
+    // Initial Profile Load & Token Sync from Bot
+    loadUserProfile();
+    syncTokenFromBot();
   </script>
 </body>
 </html>
